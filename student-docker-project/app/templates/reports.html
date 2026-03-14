@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body{
+            background:#001932;
+            color:white;
+            font-family:Arial;
+            padding:30px;
+            text-align:center;
+        }
+
+        h2{
+            color:cyan;
+        }
+
+        canvas{
+            background:white;
+            padding:20px;
+            border-radius:10px;
+        }
+
+        button{
+            margin-top:20px;
+            padding:8px 15px;
+            border:none;
+            border-radius:5px;
+            background:cyan;
+            font-weight:bold;
+            cursor:pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>📊 Day-wise Attendance Report</h2>
+
+<canvas id="attendanceChart" width="600" height="300"></canvas>
+
+<br>
+
+<a href="/dashboard">
+    <button>🏠 Back to Dashboard</button>
+</a>
+<script>
+// @ts-nocheck
+
+const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ dates | tojson | safe }},
+        datasets: [{
+            label: 'Number of Present Students',
+            data: {{ counts | tojson | safe }},
+            borderColor: 'cyan',
+            backgroundColor: 'rgba(0,255,255,0.2)',
+            fill: true,
+            tension: 0.3
+        }]
+    }
+});
+</script>
+ 
+</body>
+</html>

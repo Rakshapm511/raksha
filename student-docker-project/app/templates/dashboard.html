@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+
+  <style>
+    body {
+      background-color: rgb(0,25,58);
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: cyan;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .btn {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: cyan;
+      color: black;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      box-shadow: 0 0 15px cyan;
+    }
+
+    .welcome {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Admin Dashboard</h1>
+
+  <div class="nav">
+    <button class="btn" onclick="location.href='/teacher_login'">📋 Mark Attendance</button>
+    <button class="btn" onclick="location.href='/reports'">📊 View Reports</button>
+    <button class="btn" onclick="location.href='/student_login'">👀 View Attendance</button>
+    <button class="btn" onclick="location.href='/logout'">🚪 Logout</button>
+  </div>
+
+  <p class="welcome">
+    Welcome, Admin! You can manage attendance and view reports here.
+  </p>
+
+</body>
+</html>

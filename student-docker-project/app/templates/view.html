@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Students</title>
+    <style>
+        body{
+            background:#001932;
+            color:white;
+            font-family:Arial;
+            padding:30px;
+        }
+
+        h2{
+            text-align:center;
+            color:cyan;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+        }
+
+        th,td{
+            border:1px solid cyan;
+            padding:10px;
+            text-align:center;
+        }
+
+        th{
+            background:cyan;
+            color:black;
+        }
+
+        button{
+            padding:8px 15px;
+            background:cyan;
+            border:none;
+            border-radius:5px;
+            font-weight:bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>📋 All Students List</h2>
+
+<table>
+<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Phone</th>
+    <th>Course</th>
+    <th>Username</th>
+    <th>Password</th>
+</tr>
+
+{% for student in students %}
+<tr>
+    <td>{{ student.id }}</td>
+    <td>{{ student.name }}</td>
+    <td>{{ student.email }}</td>
+    <td>{{ student.phone }}</td>
+    <td>{{ student.course }}</td>
+    <td>{{ student.username }}</td>
+    <td>{{ student.password }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<br><br>
+<a href="/mark">
+    <button>📋 Go Back to Mark Attendance</button>
+</a>
+<a href="/dashboard">
+    <button>🏠 Back to Dashboard</button>
+</a>
+
+</body>
+</html>

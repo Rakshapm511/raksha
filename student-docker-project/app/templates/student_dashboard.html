@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Attendance</title>
+</head>
+<body style="background:#001932; color:white; text-align:center; padding:30px;">
+
+<h2>Welcome {{ name }}</h2>
+<h3>📅 Your Attendance Record</h3>
+
+<table border="1" cellpadding="10" style="margin:auto;">
+<tr>
+    <th>Date</th>
+    <th>Subject</th>
+    <th>Teacher</th>
+    <th>Status</th>
+</tr>
+
+{% for row in attendance %}
+<tr>
+    <td>{{ row.date }}</td>
+    <td>{{ row.subject }}</td>
+    <td>{{ row.teacher_name }}</td>
+    <td>
+        {% if row.status == "Present" %}
+            <span style="color:lightgreen;">Present</span>
+        {% else %}
+            <span style="color:red;">Absent</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+<a href="/student_login">
+    <button>Logout</button>
+</a>
+
+    <a href="/dashboard">
+        <button>🏠 Go Back to Admin Dashboard</button>
+    </a>
+
+</body>
+</html>
