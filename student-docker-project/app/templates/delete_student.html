@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Student</title>
+    <style>
+        body{
+            font-family:Arial;
+            background:#001932;
+            color:white;
+            text-align:center;
+            padding-top:80px;
+        }
+
+        .box{
+            width:400px;
+            margin:auto;
+            background:#01284d;
+            padding:25px;
+            border-radius:10px;
+        }
+
+        input{
+            width:90%;
+            padding:10px;
+            margin:15px 0;
+        }
+
+        button{
+            background:red;
+            color:white;
+            padding:10px 20px;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+
+<h2>⚠ Delete Student</h2>
+
+<p>
+Student Name:
+<b>{{ student.name }}</b>
+</p>
+
+<p>
+To confirm deletion, type:
+<b>{{ student.username }}</b>
+</p>
+
+<form method="POST">
+
+    <input
+        type="text"
+        name="username"
+        placeholder="Enter username to confirm"
+        required
+    >
+
+    <br>
+
+    <button type="submit">
+        Delete Student
+    </button>
+
+</form>
+
+{% if error %}
+<p style="color:red;">
+    {{ error }}
+</p>
+{% endif %}
+
+</div>
+
+</body>
+</html>
