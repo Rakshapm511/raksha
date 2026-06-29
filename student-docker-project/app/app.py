@@ -55,6 +55,7 @@ def logout():
     return redirect(url_for('login'))
 
 # ADD STUDENT
+from mysql.connector import IntegrityError
 @app.route('/add', methods=['GET','POST'])
 def add_student():
 
@@ -70,17 +71,20 @@ def add_student():
         username = request.form['username']
         password = request.form['password']
 
-        cursor.execute(
-        "INSERT INTO students (name,email,phone,course,username,password) VALUES (%s,%s,%s,%s,%s,%s)",
-        (name,email,phone,course,username,password)
-        )
+        try:
+            cursor.execute(
+               "INSERT INTO students (name,email,phone,course,username,password) VALUES (%s,%s,%s,%s,%s,%s)",
+                (name,email,phone,course,username,password)
+            )
+            db.commit()
+            return redirect('/view')
 
-        db.commit()
-
-        return redirect('/view')
-
+        except mysql.connector.IntegrityError:
+            return render_template(
+                'add.html',
+                error="Username already exists"
+            )
     return render_template('add.html')
-
 #teacher_login
 @app.route("/teacher_login", methods=["GET", "POST"])
 def teacher_login():
@@ -94,8 +98,8 @@ def teacher_login():
 
         if teacher:
             session["teacher_id"] = teacher["id"]
-            session["username"] = teacher["username"]
-            session["subject"] = teacher["subject"]   
+            session["teacher_name"] = teacher["teacher_name"]
+            session["subject"] = teacher["subject"]
             return redirect("/mark")
         else:
             return "Invalid Login"
@@ -118,26 +122,23 @@ def view_students():
 #view report
 @app.route('/reports')
 def reports():
-    cursor = db.cursor()
 
-    query = """
-        SELECT date,
-        SUM(CASE WHEN status='Present' THEN 1 ELSE 0 END) as present_count
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT
+            date,
+            subject,
+            COUNT(CASE WHEN status='Present' THEN 1 END) AS present_count,
+            COUNT(CASE WHEN status='Absent' THEN 1 END) AS absent_count
         FROM attendance
-        GROUP BY date
+        GROUP BY date, subject
         ORDER BY date
-    """
+    """)
 
-    cursor.execute(query)
-    rows = cursor.fetchall()
+    reports = cursor.fetchall()
 
-    dates = []
-    counts = []
-
-    for row in rows:
-        dates.append(str(row[0]))
-        counts.append(row[1])
-    return render_template("reports.html", dates=dates, counts=counts)
+    return render_template("reports.html", reports=reports)
 
 
 #MARK_ATTENDANCE
@@ -162,19 +163,23 @@ def mark_attendance():
             status = request.form.get(f"status_{student_id}")
 
             if status:
+                teacher_id = session["teacher_id"]
+                subject = session["subject"]
+
                 cursor.execute("""
-                    INSERT INTO attendance (student_id, date, status, teacher_id, subject)
-                    VALUES (%s, %s, %s, %s, %s)
-                    ON DUPLICATE KEY UPDATE
-                        status = VALUES(status),
-                        teacher_id = VALUES(teacher_id),
-                        subject = VALUES(subject)
-                """, (
+INSERT INTO attendance
+(student_id, date, subject, teacher_id, status)
+VALUES (%s, %s, %s, %s, %s)
+ON DUPLICATE KEY UPDATE
+    status = VALUES(status),
+    teacher_id = VALUES(teacher_id),
+    subject = VALUES(subject)
+""", (
     student_id,
     today,
-    status,
+    session["subject"],
     session["teacher_id"],
-    session["subject"]
+    status
 ))
                 
         db.commit()
@@ -184,26 +189,60 @@ def mark_attendance():
     students = cursor.fetchall()
 
     return render_template(
-        "mark_attendance.html",
-        students=students,
-        message=message,
-        username=session["username"],     
-        subject=session["subject"]   
-    )
+    "mark_attendance.html",
+    students=students,
+    message=message,
+    teacher_name=session["teacher_name"],
+    subject=session["subject"]
+)
 #delete button
-@app.route("/delete/<int:id>")
+@app.route("/delete/<int:id>", methods=["GET", "POST"])
 def delete_student(id):
+
     if 'teacher_id' not in session:
         return redirect("/")
-    
-    # First delete attendance records
-    cursor.execute("DELETE FROM attendance WHERE student_id=%s", (id,))
-    # Then delete student
-    cursor.execute("DELETE FROM students WHERE id=%s", (id,))
-    db.commit()
 
-    return redirect("/mark")
+    cursor = db.cursor(dictionary=True)
 
+    cursor.execute(
+        "SELECT * FROM students WHERE id=%s",
+        (id,)
+    )
+    student = cursor.fetchone()
+
+    if not student:
+        return "Student not found"
+
+    if request.method == "POST":
+
+        entered_username = request.form["username"]
+
+        if entered_username == student["username"]:
+
+            cursor.execute(
+                "DELETE FROM attendance WHERE student_id=%s",
+                (id,)
+            )
+
+            cursor.execute(
+                "DELETE FROM students WHERE id=%s",
+                (id,)
+            )
+
+            db.commit()
+
+            return redirect("/mark")
+
+        return render_template(
+            "delete_student.html",
+            student=student,
+            error="Username does not match"
+        )
+
+    return render_template(
+        "delete_student.html",
+        student=student
+    )
 #student login 
 @app.route('/student_login', methods=['GET','POST'])
 def student_login():
@@ -236,12 +275,17 @@ def student_dashboard():
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT a.date, a.status, a.subject, t.name AS teacher_name
-        FROM attendance a
-        LEFT JOIN teachers t ON a.teacher_id = t.id
-        WHERE a.student_id = %s
-        ORDER BY a.date DESC
-    """, (session["student_id"],))
+                   SELECT
+                   a.date,
+                   a.status,
+                   a.subject,
+                   t.teacher_name
+                   FROM attendance a
+                   LEFT JOIN teachers t
+                   ON a.teacher_id = t.id
+                   WHERE a.student_id=%s
+                   ORDER BY a.date DESC
+                   """, (session["student_id"],))
 
 
     attendance = cursor.fetchall()
