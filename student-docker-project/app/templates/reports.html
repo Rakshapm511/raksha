@@ -1,71 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Attendance Report</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Attendance Report</title>
 
-    <style>
-        body{
-            background:#001932;
-            color:white;
-            font-family:Arial;
-            padding:30px;
-            text-align:center;
-        }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        h2{
-            color:cyan;
-        }
+<style>
+body{
+    background:#001932;
+    color:white;
+    font-family:Arial;
+    padding:30px;
+}
 
-        canvas{
-            background:white;
-            padding:20px;
-            border-radius:10px;
-        }
+h2{
+    color:cyan;
+    text-align:center;
+}
 
-        button{
-            margin-top:20px;
-            padding:8px 15px;
-            border:none;
-            border-radius:5px;
-            background:cyan;
-            font-weight:bold;
-            cursor:pointer;
-        }
-    </style>
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:30px;
+}
+
+th,td{
+    border:1px solid cyan;
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    background:cyan;
+    color:black;
+}
+
+canvas{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    margin-top:30px;
+}
+
+button{
+    margin-top:20px;
+    padding:10px 20px;
+    background:cyan;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+</style>
 </head>
 
 <body>
 
-<h2>📊 Day-wise Attendance Report</h2>
+<h2>📊 Attendance Report</h2>
 
-<canvas id="attendanceChart" width="600" height="300"></canvas>
+<table>
 
-<br>
+<tr>
+    <th>Date</th>
+    <th>Subject</th>
+    <th>Present</th>
+    <th>Absent</th>
+</tr>
+
+{% for row in reports %}
+
+<tr>
+    <td>{{ row.date }}</td>
+    <td>{{ row.subject }}</td>
+    <td>{{ row.present_count }}</td>
+    <td>{{ row.absent_count }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+<canvas id="attendanceChart"></canvas>
 
 <a href="/dashboard">
-    <button>🏠 Back to Dashboard</button>
+<button>🏠 Back</button>
 </a>
+
 <script>
-// @ts-nocheck
 
-const ctx = document.getElementById('attendanceChart').getContext('2d');
+const labels = [
+{% for row in reports %}
+"{{ row.date }} - {{ row.subject }}",
+{% endfor %}
+];
 
-new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: {{ dates | tojson | safe }},
-        datasets: [{
-            label: 'Number of Present Students',
-            data: {{ counts | tojson | safe }},
-            borderColor: 'cyan',
-            backgroundColor: 'rgba(0,255,255,0.2)',
-            fill: true,
-            tension: 0.3
-        }]
-    }
+const present = [
+{% for row in reports %}
+{{ row.present_count }},
+{% endfor %}
+];
+
+new Chart(document.getElementById('attendanceChart'),{
+
+type:'bar',
+
+data:{
+labels:labels,
+
+datasets:[{
+
+label:'Present Students',
+
+data:present,
+
+backgroundColor:'cyan'
+
+}]
+}
+
 });
+
 </script>
- 
+
 </body>
 </html>
