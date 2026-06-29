@@ -65,7 +65,7 @@ th{
 
 <div class="top-bar">
     <div>
-        👩‍🏫 Logged in as: <b>{{ session['username'] }}</b>
+        👩‍🏫 Logged in as: <b>{{ teacher_name }}</b>
     </div>
     <div>
         👥 Total Students: <b>{{ students|length }}</b>
@@ -73,7 +73,7 @@ th{
 </div>
 
 <div style="margin-bottom:20px;">
-    <h2>Welcome {{ username }}</h2>
+    <h2>Welcome {{ teacher_name }}</h2>
 
     <h3>Subject: {{ subject }}</h3>
     
@@ -107,8 +107,7 @@ th{
         <input type="radio" name="status_{{ student.id }}" value="Absent"> Absent
     </td>
     <td>
-        <a href="/delete/{{ student.id }}" 
-   onclick="return confirm('Are you sure you want to delete this student?')">
+        <a href="/delete/{{ student.id }}">
     <button type="button" style="background:red;color:white;">
         🗑 Delete
     </button>
