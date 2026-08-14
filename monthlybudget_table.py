@@ -2,7 +2,6 @@ import mysql.connector
 from datetime import datetime
 
 class ExpenseTracker:
-
     def __init__(self):
 
         self.connection = mysql.connector.connect(
@@ -496,7 +495,6 @@ class ExpenseTracker:
             print("Remaining      :", f"{remaining:.2f}")
 
             if remaining < 0:
-
                 print("\n⚠ WARNING!")
                 print(
                     "Budget exceeded by:",
@@ -504,17 +502,14 @@ class ExpenseTracker:
                 )
 
             elif remaining == 0:
-
                 print("\n⚠ You have used your entire budget!")
 
             else:
-
                 print("\n✓ You are within your budget.")
 
             cursor.close()
 
 tracker = ExpenseTracker()
-
 
 while True:
 
