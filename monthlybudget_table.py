@@ -13,6 +13,7 @@ class ExpenseTracker:
         )
 
         self.cursor = self.connection.cursor()
+        
 # expense adding
 #_________________________________________________________________________________________
     def add_expense(self):
